@@ -77,13 +77,13 @@ class Wave extends React.PureComponent {
             let {A, T, fill} = waveParams[i];
             let translateX = this._animValues[i].interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, -2 * T],
+                outputRange: [0, -T],
             });
             let wave = (
                 <AnimatedSvg
                     key={i}
                     style={{
-                        width: 3 * T,
+                        width: 6 * T,
                         height: A + H,
                         position: 'absolute',
                         left: 0,
@@ -94,8 +94,12 @@ class Wave extends React.PureComponent {
                     viewBox={`0 0 ${3 * T} ${A + H}`}
                 >
                     <Path
-                        d={`M 0 0 Q ${T / 4} ${-A} ${T / 2} 0 T ${T} 0 T ${3 * T / 2} 0 T ${2 * T} 0 T ${5 * T / 2} 0 T ${3 * T} 0 V ${H} H 0 Z`}
+                        // d={`M 0 0 Q ${T / 4} ${-A} ${T / 2} 0 T ${T} 0 T ${3 * T / 2} 0 T ${2 * T} 0 T ${5 * T / 2} 0 T ${3 * T} 0 V ${H} H 0 Z`}
+                        // d={`m 0 ${A} l ${A + H} ${A + H}`}
+                        d={`m 0 ${A} q ${T / 4} ${A} ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 t ${T / 2} 0 V ${H+A} H 0 Z`}
+                        // d={`M 0 ${A} Q ${T / 4} ${A} ${T / 2} 0 T ${T} 0 T ${3 * T / 2} 0 T ${2 * T} 0 T ${5 * T / 2} 0 T ${3 * T} 0 V ${H+A} H 0 Z`}
                         fill={fill}
+                        // stroke="red"
                         transform={`translate(0, ${A})`}
                     />
                 </AnimatedSvg>
@@ -152,14 +156,34 @@ class Wave extends React.PureComponent {
         } = this.props
 
         for (let i = 0; i < this._animValues.length; i++) {
-            let anim = Animated.loop(Animated.timing(this._animValues[i], {
+            // let anim = Animated.loop(Animated.timing(this._animValues[i], {
+            //     toValue: 1,
+            //     duration: speed + i * speedIncreasePerWave,
+            //     easing: Easing[easing],
+            //     useNativeDriver: true,
+            // }));
+            let anim = Animated.timing(this._animValues[i], {
                 toValue: 1,
                 duration: speed + i * speedIncreasePerWave,
                 easing: Easing[easing],
                 useNativeDriver: true,
-            }));
+            });
             this._animations.push(anim);
-            anim.start();
+
+            let loopAnimat = () => {
+              anim.start(() => {
+                console.log('wave end');
+                this._animValues[i].setValue(0);
+                // anim.start();
+                loopAnimat();
+              });
+            }
+            loopAnimat();
+            // anim.start(() => {
+            //   console.log('wave end');
+            //   this._animValues[i].setValue(0);
+            //   anim.start();
+            // });
         }
         this._animated = true;
     }
