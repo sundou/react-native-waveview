@@ -162,23 +162,25 @@ class Wave extends React.PureComponent {
             //     easing: Easing[easing],
             //     useNativeDriver: true,
             // }));
-            let anim = Animated.timing(this._animValues[i], {
+            let anim = Animated.loop(Animated.timing(this._animValues[i], {
                 toValue: 1,
                 duration: speed + i * speedIncreasePerWave,
                 easing: Easing[easing],
                 useNativeDriver: true,
-            });
+            }));
             this._animations.push(anim);
+            anim.start();
 
-            let loopAnimat = () => {
-              anim.start(() => {
-                console.log('wave end');
-                this._animValues[i].setValue(0);
-                // anim.start();
-                loopAnimat();
-              });
-            }
-            loopAnimat();
+            // let loopAnimat = () => {
+            //   anim.start(() => {
+            //     console.log('wave end');
+            //     this._animValues[i].setValue(0);
+            //     // anim.start();
+            //     loopAnimat();
+            //   });
+            // }
+            // loopAnimat();
+
             // anim.start(() => {
             //   console.log('wave end');
             //   this._animValues[i].setValue(0);
